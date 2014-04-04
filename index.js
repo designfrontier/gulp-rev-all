@@ -6,10 +6,14 @@ var through = require('through2');
 var chalk = require('chalk');
 var gutil = require('gulp-util');
 
-module.exports = function(options) {
+module.exports = function(optionsIn) {
 
-    options = options || {};
+    var options = optionsIn || {};
     var first = true;
+
+    if(typeof options.hashLength === 'undefined'){
+        options.hashLength = 8;
+    }
 
     return through.obj(function (file, enc, callback) {
 
@@ -35,10 +39,10 @@ module.exports = function(options) {
             case '.js':
             case '.css':
             case '.html':
-                tools.revReferencesInFile(file, options.rootDir);
+                tools.revReferencesInFile(file, options);
         }
 
-        var filenameReved = path.basename(tools.revFile(file.path));
+        var filenameReved = path.basename(tools.revFile(file.path, options));
         var base = path.dirname(file.path);        
         file.path = path.join(base, filenameReved);
 
